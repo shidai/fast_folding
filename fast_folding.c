@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	read_PSRFITS_files(in_name);
+	read_PSRFITS_files(in_name, pred_name);
 
 	return 0;
 }
