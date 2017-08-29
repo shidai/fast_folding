@@ -165,7 +165,7 @@ void get_PSRFITS_subint(float *fdata, fitsfile *fp, int isub, int nbit, int ncha
     }
 }
 
-void read_PSRFITS_files(char *fname, char pred_name)
+void read_PSRFITS_files(char *fname, char *pred_name)
 {
     int i, nsub;
     int IMJD, SMJD, itmp, ii, status = 0;
@@ -193,7 +193,7 @@ void read_PSRFITS_files(char *fname, char pred_name)
     long repeat, width;
     int colnum, anynull;
 
-    if (ret=T2Predictor_Read(&pred, (char *)pred_name))
+    if (ret=T2Predictor_Read(&pred, pred_name))
     //if (ret=T2Predictor_Read(&pred,(char *)"t2pred.dat"))
     {
 	    printf("Error: unable to read predictor\n");
