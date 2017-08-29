@@ -277,8 +277,8 @@ void read_PSRFITS_files(char *fname, char *pred_name)
     }
 
     int nbin = 128;
-    float *prof;
-    prof = (float *)malloc(sizeof(float)*nbin);
+    double *prof;
+    prof = (double *)malloc(sizeof(double)*nbin);
     for (i=0; i<nbin; i++)
     {
 	    prof[i] = 0.0;
