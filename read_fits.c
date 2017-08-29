@@ -61,7 +61,7 @@ void get_PSRFITS_subint(float *fdata, fitsfile *fp, int isub, int nbit, int ncha
         exit(1);
     }
     // The following converts that byte-packed data into bytes
-		omp_set_num_threads(4);
+		omp_set_num_threads(1);
     if (bits_per_sample == 4) {
 #ifdef _OPENMP
 #pragma omp parallel for default(none) shared(numtoread,cdata,ctmp)
@@ -304,54 +304,44 @@ void read_PSRFITS_files(char *fname, char *pred_name)
     int jj;
 
     for (i=1; i<=nsub; i++)
-    //for (i=1; i<=100; i++)
     {
-	get_PSRFITS_subint(fdata, fp, i, nbit, nchan, nsblk);
-	for (j = 0; j<nsblk; j++)
-	//for (j = 0; j<1; j++)
-	{
-		tc = (nsblk*(i-1) + j)*tsample;
-		mjd = mjd0 + (nsblk*(i-1) + j)*tsample/86400.0L;
+			get_PSRFITS_subint(fdata, fp, i, nbit, nchan, nsblk);
 
-		if (tc >= ncyc)
-		{
-			printf ("test %f %d %d %f\n", tc, ncyc, nsblk, tsample);
-			t0 = (nsblk*(i-1) + j)*tsample;
-			for (jj = 0; jj<nchan; jj++)
+			for (j = 0; j<nsblk; j++)
 			{
-				freq = (long double)freqs[jj];
-    				freq_phase[jj] = T2Predictor_GetPhase(&pred,mjd,freq);
-    				freq_period[jj] = 1.0/T2Predictor_GetFrequency(&pred,mjd,freq);   // second
-    				//freq_period[jj] = 1.0/218.81184385;   // second
+				tc = (nsblk*(i-1) + j)*tsample;
+				mjd = mjd0 + (nsblk*(i-1) + j)*tsample/86400.0L;
+				
+				if (tc >= ncyc)
+				{
+					printf ("test %f %d %d %f\n", tc, ncyc, nsblk, tsample);
+					t0 = (nsblk*(i-1) + j)*tsample;
+					for (jj = 0; jj<nchan; jj++)
+					{
+						freq = (long double)freqs[jj];
+						freq_phase[jj] = T2Predictor_GetPhase(&pred,mjd,freq);
+						freq_period[jj] = 1.0/T2Predictor_GetFrequency(&pred,mjd,freq);   // second
+						//freq_phase[jj] = 0.1;
+						//freq_period[jj] = 1.0/218.81184385;   // second
+					}
+					ncyc += 2;
+				}
+				
+				for (k = 0; k<nchan; k++)
+				{
+					phase0 = freq_phase[k] + (tc-t0)/freq_period[k];
+					phase = (phase0 - floor(phase0));
+					temp = phase*nbin;
+					index = (int)(temp+0.5)>(int)temp?(int)temp+1:(int)temp;
+					prof[index] += fdata[nchan*j+k];
+				}
 			}
-			//ncyc++;
-			ncyc += 2;
 		}
 
-		for (k = 0; k<nchan; k++)
-		//for (k = 128; k<136; k++)
-		//k = 128;
+		for (i=0; i<nbin; i++)
 		{
-			phase0 = freq_phase[k] + (tc-t0)/freq_period[k];
-			phase = (phase0 - floor(phase0));
-    			//printf ("Predicted phase: %.10Lf\n", phase);
-    			//printf ("Predicted phase: %.10Lf %Lf %.10Lf\n", phase, freq, mjd);
-
-			temp = phase*nbin;
-			index = (int)(temp+0.5)>(int)temp?(int)temp+1:(int)temp;
-    			//printf ("Predicted index: %d\n", index);
-
-			prof[index] += fdata[nchan*j+k];
+			printf ("%f\n", prof[i]);
 		}
-	}
-	//printf ("%d\n", i);
-
-    }
-
-    for (i=0; i<nbin; i++)
-    {
-	    printf ("%f\n", prof[i]);
-    }
 
     free(freqs);
     free(fdata);
