@@ -4,6 +4,7 @@
 #include "fitsio.h"
 #include "T2toolkit.h"
 #include "tempo2pred.h"
+#include "omp.h"
 
 void get_PSRFITS_subint(float *fdata, fitsfile *fp, int isub, int nbit, int nchan, int nsblk)
 {
@@ -60,6 +61,7 @@ void get_PSRFITS_subint(float *fdata, fitsfile *fp, int isub, int nbit, int ncha
         exit(1);
     }
     // The following converts that byte-packed data into bytes
+		omp_set_num_threads(4);
     if (bits_per_sample == 4) {
 #ifdef _OPENMP
 #pragma omp parallel for default(none) shared(numtoread,cdata,ctmp)
@@ -127,7 +129,7 @@ void get_PSRFITS_subint(float *fdata, fitsfile *fp, int isub, int nbit, int ncha
     {
         if (bits_per_sample == 16) {
 #ifdef _OPENMP
-#pragma omp parallel for default(none) shared(s,cdata,fdata,scales,offsets,weights)
+#pragma omp parallel for default(none) shared(cdata,fdata,spectra_per_subint,num_channels,samples_per_spectra)
 #endif
             for (ii = 0; ii < spectra_per_subint; ii++) {
                 int jj;
@@ -139,7 +141,7 @@ void get_PSRFITS_subint(float *fdata, fitsfile *fp, int isub, int nbit, int ncha
             }
         } else if (bits_per_sample == 32) {
 #ifdef _OPENMP
-#pragma omp parallel for default(none) shared(s,cdata,fdata,scales,offsets,weights)
+#pragma omp parallel for default(none) shared(cdata,fdata,spectra_per_subint,num_channels,samples_per_spectra)
 #endif
             for (ii = 0; ii < spectra_per_subint; ii++) {
                 int jj;
@@ -151,7 +153,7 @@ void get_PSRFITS_subint(float *fdata, fitsfile *fp, int isub, int nbit, int ncha
             }
         } else {
 #ifdef _OPENMP
-#pragma omp parallel for default(none) shared(s,cdata,fdata,scales,offsets,weights)
+#pragma omp parallel for default(none) shared(cdata,fdata,spectra_per_subint,num_channels,samples_per_spectra)
 #endif
             for (ii = 0; ii < spectra_per_subint; ii++) {
                 int jj;
