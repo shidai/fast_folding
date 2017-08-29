@@ -27,11 +27,6 @@ int main(int argc, char *argv[])
 			strcpy(pred_name, argv[++i]);
 			printf ("Predictor name: %s\n", pred_name);
 		}
-		else
-		{
-			printf ("Unknown input\n");
-			exit(1);
-		}
 	}
 
 	read_PSRFITS_files(in_name);
