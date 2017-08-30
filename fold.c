@@ -55,6 +55,11 @@ void fold_main (search_mode *s, char *pred_name)
 	tc[i] = (float *)malloc(sizeof(float)*s->nsblk);
     }
 
+    freq_phase_temp = (long double *)malloc(sizeof(long double)*s->nchan);
+    freq_period_temp = (long double *)malloc(sizeof(long double)*s->nchan);
+
+    ///////////////////////////////////////////////
+
     for (i=0; i<100; i++)
     //for (i=0; i<s->nsub; i++)
     {
@@ -65,26 +70,25 @@ void fold_main (search_mode *s, char *pred_name)
 		    
 		    if (tc[i][j] >= ncyc)
 		    {
-			    t0[i][j] = (s->nsblk*i + j)*s->tsample;
+			    //t0[i][j] = (s->nsblk*i + j)*s->tsample;
+			    t0_temp = (s->nsblk*i + j)*s->tsample;
 			    for (k = 0; k<s->nchan; k++)
 			    {
 				    freq = (long double)s->freqs[k];
-				    freq_phase[i][j*s->nchan + k] = T2Predictor_GetPhase(&pred,mjd,freq);
-				    freq_period[i][j*s->nchan + k] = 1.0/T2Predictor_GetFrequency(&pred,mjd,freq);   // second
-				    printf ("test %f %d %f %Lf\n", tc[i][j], ncyc, t0[i][j], freq_phase[i][j*s->nchan + k]);
+				    freq_phase_temp[k] = T2Predictor_GetPhase(&pred,mjd,freq);
+				    freq_period_temp[k] = 1.0/T2Predictor_GetFrequency(&pred,mjd,freq);   // second
+				    printf ("test %f %d\n", tc[i][j], ncyc);
 			    }
 			    ncyc += 2;
 		    }
-		    else
+		    
+		    t0[i][j] = t0_temp;
+		    for (k = 0; k<s->nchan; k++)
 		    {
-			    t0[i][j] = t0[i][j-1];
-			    for (k = 0; k<s->nchan; k++)
-			    {
-				    freq_phase[i][j*s->nchan + k] = freq_phase[i][(j-1)*s->nchan + k];
-				    freq_period[i][j*s->nchan + k] = freq_period[i][(j-1)*s->nchan + k];   // second
-			    }
-			    //printf ("test %f %d %f %Lf\n", tc[i][j*s->nchan + k], ncyc, t0[i][j*s->nchan + k], freq_period[i][j*s->nchan + k]);
+			    freq_phase[i][j*s->nchan + k] = freq_phase_temp[k];
+			    freq_period[i][j*s->nchan + k] = freq_period_temp[k];   // second
 		    }
+			    //printf ("test %f %d %f %Lf\n", tc[i][j*s->nchan + k], ncyc, t0[i][j*s->nchan + k], freq_period[i][j*s->nchan + k]);
 	    }
     }
     //printf ("I am here\n");
