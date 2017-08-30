@@ -63,8 +63,7 @@ void fold_main (search_mode *s, char *pred_name)
 
     ///////////////////////////////////////////////
 
-    for (i=0; i<100; i++)
-    //for (i=0; i<s->nsub; i++)
+    for (i=0; i<s->nsub; i++)
     {
 	    for (j = 0; j<s->nsblk; j++)
 	    {
@@ -80,8 +79,8 @@ void fold_main (search_mode *s, char *pred_name)
 				    freq = (long double)s->freqs[k];
 				    freq_phase_temp[k] = T2Predictor_GetPhase(&pred,mjd,freq);
 				    freq_period_temp[k] = 1.0/T2Predictor_GetFrequency(&pred,mjd,freq);   // second
-				    printf ("test %f %d\n", tc[i][j], ncyc);
 			    }
+			    printf ("test %f %d\n", tc[i][j], ncyc);
 			    ncyc += 2;
 		    }
 		    
@@ -96,8 +95,7 @@ void fold_main (search_mode *s, char *pred_name)
     }
     //printf ("I am here\n");
 
-    for (i=0; i<100; i++)
-    //for (i=0; i<s->nsub; i++)
+    for (i=0; i<s->nsub; i++)
     {
 	    printf ("%d\n", i);
 	    for (j = 0; j<s->nsblk; j++)
