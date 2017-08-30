@@ -67,7 +67,7 @@ void fold_main (search_mode *s, char *pred_name)
 			    tc[i][j*s->nchan + k] = (s->nsblk*i + j)*s->tsample;
 			    if (tc[i][j*s->nchan + k] >= ncyc)
 			    {
-				    t0[i][j*s->nchan + k] = (s->nsblk*(i-1) + j)*s->tsample;
+				    t0[i][j*s->nchan + k] = (s->nsblk*i + j)*s->tsample;
 				    freq = (long double)s->freqs[jj];
 				    freq_phase[i][j*s->nchan + k] = T2Predictor_GetPhase(&pred,mjd,freq);
 				    freq_period[i][j*s->nchan + k] = 1.0/T2Predictor_GetFrequency(&pred,mjd,freq);   // second
