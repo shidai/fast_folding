@@ -1,1 +1,1 @@
-gcc -o fast_folding fast_folding.c read_fits.c T2toolkit.c tempo2pred.c cheby2d.c t1polyco.c -lcfitsio -lm -fopenmp
+gcc -o fast_folding fast_folding.c fold.c read_fits.c T2toolkit.c tempo2pred.c cheby2d.c t1polyco.c -lcfitsio -lm -fopenmp
