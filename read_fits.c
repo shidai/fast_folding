@@ -233,7 +233,7 @@ void read_PSRFITS_files(search_mode *s, char *fname, char *pred_name)
     s->smjd = atof(ctmp);
 
     s->mjd0 = s->imjd + s->smjd/86400.0L;
-    printf ("Start MJD: %Lf %Lf %Lf\n", imjd, smjd, mjd0);
+    printf ("Start MJD: %Lf %Lf %Lf\n", s->imjd, s->smjd, s->mjd0);
 
     // Now switch to the SUBINT HDU header
     fits_movnam_hdu(fp, BINARY_TBL, "SUBINT", 0, &status);
@@ -254,7 +254,7 @@ void read_PSRFITS_files(search_mode *s, char *fname, char *pred_name)
     s->tsample = atof(ctmp);
     //printf("test here %s\n", ctmp);
 
-    printf ("NSUB: %d; NCHAN: %d; NSBLK: %d; NBITS: %d; TSAMP: %lf\n", nsub, nchan, nsblk, nbit, tsample);
+    printf ("NSUB: %d; NCHAN: %d; NSBLK: %d; NBITS: %d; TSAMP: %lf\n", s->nsub, s->nchan, s->nsblk, s->nbit, s->tsample);
 
     // Observing frequencies
     //double *freqs;
