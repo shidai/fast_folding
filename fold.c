@@ -89,11 +89,11 @@ void fold_main (search_mode *s, char *pred_name)
 	    {
 		    for (k = 0; k<s->nchan; k++)
     		    {
-			    phase0 = freq_phase[k] + (tc-t0)/freq_period[k];
+			    phase0 = freq_phase[i][j*s->nchan + k] + (tc[i][j*s->nchan + k]-t0[i][j*s->nchan + k])/freq_period[i][j*s->nchan + k];
 	    		    phase = (phase0 - floor(phase0));
 	    		    temp = phase*s->nbin;
 	    		    index = (int)(temp+0.5)>(int)temp?(int)temp+1:(int)temp;
-	    		    s->prof[index] += s->fdata[i-1][s->nchan*j+k];
+	    		    s->prof[index] += s->fdata[i][s->nchan*j + k];
 		    }
 	    }
     }
