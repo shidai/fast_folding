@@ -170,16 +170,27 @@ void get_PSRFITS_subint(float *fdata, fitsfile *fp, int isub, int nbit, int ncha
 
 void read_PSRFITS_files(search_mode *s, char *fname, char *pred_name)
 {
-    int i;
-    int status = 0;
+    int i, nsub;
+    int IMJD, SMJD, itmp, ii, status = 0;
+    double OFFS, dtmp;
+    long double MJDf;
     char ctmp[80], comment[120];
 
     int ret;
     T2Predictor pred;
     long double phase0, phase;
 
+    //long double imjd, smjd;
+    //long double mjd0;
     long double mjd;
     long double freq;
+
+    //double tsample;   // second
+    //long double tsample = 0.000128;   // second
+
+    //int nchan;
+    //int nsblk;
+    //int nbit;
 
     float ftmp;
     long repeat, width;
@@ -272,12 +283,7 @@ void read_PSRFITS_files(search_mode *s, char *fname, char *pred_name)
     int j,k;
     int index;
     float temp;
-
-    for (i=1; i<=s->nsub; i++)
-    {
-    	s->fdata[i-1] = (float *)malloc(sizeof(float)*s->nsblk*s->nchan);
-	get_PSRFITS_subint(s->fdata[i-1], fp, i, s->nbit, s->nchan, s->nsblk);
-    }
+    s->fdata = (float *)malloc(sizeof(float)*s->nsblk*s->nchan);
 
     // Now pull stuff from the other columns
     float tc = 0.0; 
@@ -291,7 +297,7 @@ void read_PSRFITS_files(search_mode *s, char *fname, char *pred_name)
 
     for (i=1; i<=s->nsub; i++)
     {
-			//get_PSRFITS_subint(s->fdata, fp, i, s->nbit, s->nchan, s->nsblk);
+			get_PSRFITS_subint(s->fdata, fp, i, s->nbit, s->nchan, s->nsblk);
 
 			for (j = 0; j<s->nsblk; j++)
 			{
@@ -319,7 +325,7 @@ void read_PSRFITS_files(search_mode *s, char *fname, char *pred_name)
 					phase = (phase0 - floor(phase0));
 					temp = phase*s->nbin;
 					index = (int)(temp+0.5)>(int)temp?(int)temp+1:(int)temp;
-					s->prof[index] += s->fdata[i-1][s->nchan*j+k];
+					s->prof[index] += s->fdata[s->nchan*j+k];
 				}
 			}
 		}
@@ -330,12 +336,7 @@ void read_PSRFITS_files(search_mode *s, char *fname, char *pred_name)
 		}
 
     free(s->freqs);
-
-    for (i=1; i<=s->nsub; i++)
-    {
-    	free(s->fdata[i-1]);
-    }
-
+    free(s->fdata);
     free(freq_phase);
     free(freq_period);
     free(s->prof);
