@@ -25,7 +25,10 @@ void fold_main (search_mode *s, char *pred_name)
     int ncyc = 0;
     long double **freq_phase;
     long double **freq_period;
+    long double *freq_phase_temp;
+    long double *freq_period_temp;
     float **t0;
+    float t0_temp;
     float **tc;
 
     if (ret=T2Predictor_Read(&pred, pred_name))
@@ -162,6 +165,8 @@ void fold_main (search_mode *s, char *pred_name)
     }
     free(freq_phase);
     free(freq_period);
+    free(freq_phase_temp);
+    free(freq_period_temp);
     free(t0);
     free(tc);
 }
