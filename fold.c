@@ -88,11 +88,11 @@ void fold_main (search_mode *s, char *pred_name)
 
     for (i=0; i<s->nsub; i++)
     {
-	    printf ("I am here 1\n");
 	    for (j = 0; j<s->nsblk; j++)
 	    {
 		    for (k = 0; k<s->nchan; k++)
     		    {
+			    printf ("I am here 1\n");
 			    phase0 = freq_phase[i][j*s->nchan + k] + (tc[i][j*s->nchan + k]-t0[i][j*s->nchan + k])/freq_period[i][j*s->nchan + k];
 	    		    phase = (phase0 - floor(phase0));
 	    		    temp = phase*s->nbin;
