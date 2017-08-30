@@ -8,6 +8,7 @@
 #include <math.h>
 //#include "fitsio.h"
 #include "read_fits.h"
+#include "fold.h"
 
 int main(int argc, char *argv[])
 {
@@ -32,7 +33,11 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	read_PSRFITS_files(s, in_name, pred_name);
+	read_PSRFITS_files(s, in_name);
+
+	fold_main(s, pred_name);
+
+	demalloc(s);
 
 	return 0;
 }

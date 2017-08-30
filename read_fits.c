@@ -168,29 +168,14 @@ void get_PSRFITS_subint(float *fdata, fitsfile *fp, int isub, int nbit, int ncha
     }
 }
 
-void read_PSRFITS_files(search_mode *s, char *fname, char *pred_name)
+void read_PSRFITS_files(search_mode *s, char *fname)
 {
-    int i;
+    int i, j, k;
     int status = 0;
     char ctmp[80], comment[120];
 
-    int ret;
-    T2Predictor pred;
-    long double phase0, phase;
-
-    long double mjd;
-    long double freq;
-
     float ftmp;
-    long repeat, width;
     int colnum, anynull;
-
-    if (ret=T2Predictor_Read(&pred, pred_name))
-    //if (ret=T2Predictor_Read(&pred,(char *)"t2pred.dat"))
-    {
-	    printf("Error: unable to read predictor\n");
-	    exit(1);
-    }
 
     fitsfile *fp;	
     fits_open_file(&fp, fname, READONLY, &status);
@@ -258,18 +243,7 @@ void read_PSRFITS_files(search_mode *s, char *fname, char *pred_name)
         //printf("Frequency: %lf\n", freqs[511]);
     }
 
-    //int nbin = 128;
-    s->nbin = 128;
-    //double *prof;
-    s->prof = (double *)malloc(sizeof(double)*s->nbin);
-    for (i=0; i<s->nbin; i++)
-    {
-	    s->prof[i] = 0.0;
-    }
-
     // Data
-    //float *fdata;
-    int j,k;
     int index;
     float temp;
 
@@ -279,57 +253,10 @@ void read_PSRFITS_files(search_mode *s, char *fname, char *pred_name)
     	s->fdata[i-1] = (float *)malloc(sizeof(float)*s->nsblk*s->nchan);
 	get_PSRFITS_subint(s->fdata[i-1], fp, i, s->nbit, s->nchan, s->nsblk);
     }
+}
 
-    // Now pull stuff from the other columns
-    float tc = 0.0; 
-    float t0 = 0.0; 
-    int ncyc = 0;
-    long double *freq_phase;
-    freq_phase = (long double *)malloc(sizeof(long double)*s->nchan);
-    long double *freq_period;
-    freq_period = (long double *)malloc(sizeof(long double)*s->nchan);
-    int jj;
-
-    for (i=1; i<=s->nsub; i++)
-    {
-			//get_PSRFITS_subint(s->fdata, fp, i, s->nbit, s->nchan, s->nsblk);
-
-			for (j = 0; j<s->nsblk; j++)
-			{
-				tc = (s->nsblk*(i-1) + j)*s->tsample;
-				mjd = s->mjd0 + (s->nsblk*(i-1) + j)*s->tsample/86400.0L;
-				
-				if (tc >= ncyc)
-				{
-					printf ("test %f %d %d %f\n", tc, ncyc, s->nsblk, s->tsample);
-					t0 = (s->nsblk*(i-1) + j)*s->tsample;
-					for (jj = 0; jj<s->nchan; jj++)
-					{
-						freq = (long double)s->freqs[jj];
-						freq_phase[jj] = T2Predictor_GetPhase(&pred,mjd,freq);
-						freq_period[jj] = 1.0/T2Predictor_GetFrequency(&pred,mjd,freq);   // second
-						//freq_phase[jj] = 0.1;
-						//freq_period[jj] = 1.0/218.81184385;   // second
-					}
-					ncyc += 2;
-				}
-				
-				for (k = 0; k<s->nchan; k++)
-				{
-					phase0 = freq_phase[k] + (tc-t0)/freq_period[k];
-					phase = (phase0 - floor(phase0));
-					temp = phase*s->nbin;
-					index = (int)(temp+0.5)>(int)temp?(int)temp+1:(int)temp;
-					s->prof[index] += s->fdata[i-1][s->nchan*j+k];
-				}
-			}
-		}
-
-		for (i=0; i<s->nbin; i++)
-		{
-			printf ("%f\n", s->prof[i]);
-		}
-
+void demalloc (search_mode *s)
+{
     free(s->freqs);
 
     for (i=1; i<=s->nsub; i++)
@@ -338,8 +265,5 @@ void read_PSRFITS_files(search_mode *s, char *fname, char *pred_name)
     }
     free(s->fdata);
 
-    free(freq_phase);
-    free(freq_period);
     free(s->prof);
 }
-
