@@ -84,6 +84,7 @@ void fold_main (search_mode *s, char *pred_name)
 		    }
 	    }
     }
+    printf ("I am here\n")
 
     for (i=0; i<s->nsub; i++)
     {
