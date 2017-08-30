@@ -104,7 +104,7 @@ void fold_main (search_mode *s, char *pred_name)
 	    {
 		    for (k = 0; k<s->nchan; k++)
     		    {
-			    printf ("I am here %d %d %d %Lf %Lf\n", i, j, k, freq_phase[i][j*s->nchan + k], freq_period[i][j*s->nchan + k]);
+			    //printf ("I am here %d %d %d %Lf %Lf\n", i, j, k, freq_phase[i][j*s->nchan + k], freq_period[i][j*s->nchan + k]);
 			    phase0 = freq_phase[i][j*s->nchan + k] + (tc[i][j]-t0[i][j])/freq_period[i][j*s->nchan + k];
 			    //printf ("I am here here %d %Lf\n", k, phase0);
 	    		    phase = (phase0 - floor(phase0));
