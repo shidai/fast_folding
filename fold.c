@@ -50,8 +50,9 @@ void fold_main (search_mode *s, char *pred_name)
     {
     	freq_phase[i] = (long double *)malloc(sizeof(long double)*s->nchan*s->nsblk);
     	freq_period[i] = (long double *)malloc(sizeof(long double)*s->nchan*s->nsblk);
-	t0[i] = (float *)malloc(sizeof(float)*s->nchan*s->nsblk);
-	tc[i] = (float *)malloc(sizeof(float)*s->nchan*s->nsblk);
+
+	t0[i] = (float *)malloc(sizeof(float)*s->nsblk);
+	tc[i] = (float *)malloc(sizeof(float)*s->nsblk);
     }
 
     for (i=0; i<100; i++)
@@ -59,24 +60,26 @@ void fold_main (search_mode *s, char *pred_name)
     {
 	    for (j = 0; j<s->nsblk; j++)
 	    {
-		    //tc = (s->nsblk*i + j)*s->tsample;
 		    mjd = s->mjd0 + (s->nsblk*i + j)*s->tsample/86400.0L;
-
-		    for (k = 0; k<s->nchan; k++)
+		    tc[i][j] = (s->nsblk*i + j)*s->tsample;
+		    
+		    if (tc[i][j] >= ncyc)
 		    {
-			    tc[i][j*s->nchan + k] = (s->nsblk*i + j)*s->tsample;
-			    if (tc[i][j*s->nchan + k] >= ncyc)
+			    t0[i][j] = (s->nsblk*i + j)*s->tsample;
+			    for (k = 0; k<s->nchan; k++)
 			    {
-				    t0[i][j*s->nchan + k] = (s->nsblk*i + j)*s->tsample;
 				    freq = (long double)s->freqs[k];
 				    freq_phase[i][j*s->nchan + k] = T2Predictor_GetPhase(&pred,mjd,freq);
 				    freq_period[i][j*s->nchan + k] = 1.0/T2Predictor_GetFrequency(&pred,mjd,freq);   // second
 				    ncyc += 2;
 				    //printf ("test %f %d %f %Lf\n", tc[i][j*s->nchan + k], ncyc, t0[i][j*s->nchan + k], freq_phase[i][j*s->nchan + k]);
 			    }
-			    else
+		    }
+		    else
+		    {
+			    t0[i][j] = t0[i][j-1];
+			    for (k = 0; k<s->nchan; k++)
 			    {
-				    t0[i][j*s->nchan + k] = t0[i][(j-1)*s->nchan + k];
 				    freq_phase[i][j*s->nchan + k] = freq_phase[i][(j-1)*s->nchan + k];
 				    freq_period[i][j*s->nchan + k] = freq_period[i][(j-1)*s->nchan + k];   // second
 			    }
@@ -86,7 +89,8 @@ void fold_main (search_mode *s, char *pred_name)
     }
     printf ("I am here\n");
 
-    for (i=0; i<s->nsub; i++)
+    for (i=0; i<100; i++)
+    //for (i=0; i<s->nsub; i++)
     {
 	    for (j = 0; j<s->nsblk; j++)
 	    {
