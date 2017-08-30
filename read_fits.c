@@ -265,7 +265,7 @@ void read_PSRFITS_files(search_mode *s, char *fname, char *pred_name)
         printf("Warning!:  Can't find the channel freq column!\n");
         status = 0;     // Reset status
     } else {
-        fits_read_col(fp, TDOUBLE, colnum, 1L, 1L, nchan, 0, s->freqs, &anynull, &status);
+        fits_read_col(fp, TDOUBLE, colnum, 1L, 1L, s->nchan, 0, s->freqs, &anynull, &status);
         //printf("Frequency: %lf\n", freqs[511]);
     }
 
