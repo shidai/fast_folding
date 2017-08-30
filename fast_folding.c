@@ -15,6 +15,9 @@ int main(int argc, char *argv[])
 	char pred_name[128]; // predictor name
 	int i;
 
+	search_mode *s;
+	s = (search_mode *)malloc(sizeof(search_mode));
+
 	for (i=0; i<argc; i++)
 	{
 		if (strcmp(argv[i], "-f") == 0)
@@ -29,7 +32,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	read_PSRFITS_files(in_name, pred_name);
+	read_PSRFITS_files(s, in_name, pred_name);
 
 	return 0;
 }

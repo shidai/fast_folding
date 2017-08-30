@@ -167,7 +167,7 @@ void get_PSRFITS_subint(float *fdata, fitsfile *fp, int isub, int nbit, int ncha
     }
 }
 
-void read_PSRFITS_files(char *fname, char *pred_name)
+void read_PSRFITS_files(search_mode *s, char *fname, char *pred_name)
 {
     int i, nsub;
     int IMJD, SMJD, itmp, ii, status = 0;
@@ -179,17 +179,17 @@ void read_PSRFITS_files(char *fname, char *pred_name)
     T2Predictor pred;
     long double phase0, phase;
 
-    long double imjd, smjd;
-    long double mjd0;
+    //long double imjd, smjd;
+    //long double mjd0;
     long double mjd;
     long double freq;
 
-    double tsample;   // second
+    //double tsample;   // second
     //long double tsample = 0.000128;   // second
 
-    int nchan;
-    int nsblk;
-    int nbit;
+    //int nchan;
+    //int nsblk;
+    //int nbit;
 
     float ftmp;
     long repeat, width;
@@ -201,17 +201,6 @@ void read_PSRFITS_files(char *fname, char *pred_name)
 	    printf("Error: unable to read predictor\n");
 	    exit(1);
     }
-
-    /*
-    i = 0;
-    while (i<512*2048)
-    {
-    	phase0 = T2Predictor_GetPhase(&pred,mjd0,freq);
-	phase = (phase0 - floor(phase0));
-    	printf ("Predicted phase: %lf\n", phase);
-	i++;
-    }
-    */
 
     fitsfile *fp;	
     fits_open_file(&fp, fname, READONLY, &status);
@@ -238,87 +227,89 @@ void read_PSRFITS_files(char *fname, char *pred_name)
     printf ("Telescope: %s\n", ctmp);
 
     fits_read_key(fp, TSTRING, "STT_IMJD", ctmp, comment, &status);
-    imjd = atof(ctmp);
+    s->imjd = atof(ctmp);
     fits_read_key(fp, TSTRING, "STT_SMJD", ctmp, comment, &status);
-    smjd = atof(ctmp);
-    mjd0 = imjd + smjd/86400.0L;
+    s->smjd = atof(ctmp);
+
+    s->mjd0 = s->imjd + s->smjd/86400.0L;
     printf ("Start MJD: %Lf %Lf %Lf\n", imjd, smjd, mjd0);
 
     // Now switch to the SUBINT HDU header
     fits_movnam_hdu(fp, BINARY_TBL, "SUBINT", 0, &status);
     fits_read_key(fp, TSTRING, "NAXIS2", ctmp, comment, &status);
-    nsub = atoi(ctmp);
+    s->nsub = atoi(ctmp);
 
     // Read in nchan, nbit, tsamp
     fits_read_key(fp, TSTRING, "NCHAN", ctmp, comment, &status);
-    nchan = atoi(ctmp);
+    s->nchan = atoi(ctmp);
 
     fits_read_key(fp, TSTRING, "NSBLK", ctmp, comment, &status);
-    nsblk = atoi(ctmp);
+    s->nsblk = atoi(ctmp);
 
     fits_read_key(fp, TSTRING, "NBITS", ctmp, comment, &status);
-    nbit = atoi(ctmp);
+    s->nbit = atoi(ctmp);
 
     fits_read_key(fp, TSTRING, "TBIN", ctmp, comment, &status);
-    tsample = atof(ctmp);
+    s->tsample = atof(ctmp);
     //printf("test here %s\n", ctmp);
 
     printf ("NSUB: %d; NCHAN: %d; NSBLK: %d; NBITS: %d; TSAMP: %lf\n", nsub, nchan, nsblk, nbit, tsample);
 
     // Observing frequencies
-    double *freqs;
-    freqs = (double *)malloc(sizeof(double)*nchan);
+    //double *freqs;
+    s->freqs = (double *)malloc(sizeof(double)*s->nchan);
 
     fits_get_colnum(fp, 0, "DAT_FREQ", &colnum, &status);
     if (status == COL_NOT_FOUND) {
         printf("Warning!:  Can't find the channel freq column!\n");
         status = 0;     // Reset status
     } else {
-        fits_read_col(fp, TDOUBLE, colnum, 1L, 1L, nchan, 0, freqs, &anynull, &status);
+        fits_read_col(fp, TDOUBLE, colnum, 1L, 1L, nchan, 0, s->freqs, &anynull, &status);
         //printf("Frequency: %lf\n", freqs[511]);
     }
 
-    int nbin = 128;
-    double *prof;
-    prof = (double *)malloc(sizeof(double)*nbin);
-    for (i=0; i<nbin; i++)
+    //int nbin = 128;
+    s->nbin = 128;
+    //double *prof;
+    s->prof = (double *)malloc(sizeof(double)*s->nbin);
+    for (i=0; i<s->nbin; i++)
     {
-	    prof[i] = 0.0;
+	    s->prof[i] = 0.0;
     }
 
     // Data
-    float *fdata;
+    //float *fdata;
     int j,k;
     int index;
     float temp;
-    fdata = (float *)malloc(sizeof(float)*nsblk*nchan);
+    s->fdata = (float *)malloc(sizeof(float)*s->nsblk*s->nchan);
 
     // Now pull stuff from the other columns
     float tc = 0.0; 
     float t0 = 0.0; 
     int ncyc = 0;
     long double *freq_phase;
-    freq_phase = (long double *)malloc(sizeof(long double)*nchan);
+    freq_phase = (long double *)malloc(sizeof(long double)*s->nchan);
     long double *freq_period;
-    freq_period = (long double *)malloc(sizeof(long double)*nchan);
+    freq_period = (long double *)malloc(sizeof(long double)*s->nchan);
     int jj;
 
-    for (i=1; i<=nsub; i++)
+    for (i=1; i<=s->nsub; i++)
     {
-			get_PSRFITS_subint(fdata, fp, i, nbit, nchan, nsblk);
+			get_PSRFITS_subint(s->fdata, fp, i, s->nbit, s->nchan, s->nsblk);
 
-			for (j = 0; j<nsblk; j++)
+			for (j = 0; j<s->nsblk; j++)
 			{
-				tc = (nsblk*(i-1) + j)*tsample;
-				mjd = mjd0 + (nsblk*(i-1) + j)*tsample/86400.0L;
+				tc = (s->nsblk*(i-1) + j)*s->tsample;
+				mjd = s->mjd0 + (s->nsblk*(i-1) + j)*s->tsample/86400.0L;
 				
 				if (tc >= ncyc)
 				{
-					printf ("test %f %d %d %f\n", tc, ncyc, nsblk, tsample);
-					t0 = (nsblk*(i-1) + j)*tsample;
-					for (jj = 0; jj<nchan; jj++)
+					printf ("test %f %d %d %f\n", tc, ncyc, s->nsblk, s->tsample);
+					t0 = (s->nsblk*(i-1) + j)*s->tsample;
+					for (jj = 0; jj<s->nchan; jj++)
 					{
-						freq = (long double)freqs[jj];
+						freq = (long double)s->freqs[jj];
 						freq_phase[jj] = T2Predictor_GetPhase(&pred,mjd,freq);
 						freq_period[jj] = 1.0/T2Predictor_GetFrequency(&pred,mjd,freq);   // second
 						//freq_phase[jj] = 0.1;
@@ -327,26 +318,26 @@ void read_PSRFITS_files(char *fname, char *pred_name)
 					ncyc += 2;
 				}
 				
-				for (k = 0; k<nchan; k++)
+				for (k = 0; k<s->nchan; k++)
 				{
 					phase0 = freq_phase[k] + (tc-t0)/freq_period[k];
 					phase = (phase0 - floor(phase0));
-					temp = phase*nbin;
+					temp = phase*s->nbin;
 					index = (int)(temp+0.5)>(int)temp?(int)temp+1:(int)temp;
-					prof[index] += fdata[nchan*j+k];
+					s->prof[index] += s->fdata[s->nchan*j+k];
 				}
 			}
 		}
 
-		for (i=0; i<nbin; i++)
+		for (i=0; i<s->nbin; i++)
 		{
-			printf ("%f\n", prof[i]);
+			printf ("%f\n", s->prof[i]);
 		}
 
-    free(freqs);
-    free(fdata);
+    free(s->freqs);
+    free(s->fdata);
     free(freq_phase);
     free(freq_period);
-    free(prof);
+    free(s->prof);
 }
 
