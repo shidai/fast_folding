@@ -71,14 +71,15 @@ void fold_main (search_mode *s, char *pred_name)
 				    freq_phase[i][j*s->nchan + k] = T2Predictor_GetPhase(&pred,mjd,freq);
 				    freq_period[i][j*s->nchan + k] = 1.0/T2Predictor_GetFrequency(&pred,mjd,freq);   // second
 				    ncyc += 2;
-				    printf ("test %f %d %f\n", tc[i][j*s->nchan + k], ncyc, t0[i][j*s->nchan + k]);
+				    //printf ("test %f %d %f\n", tc[i][j*s->nchan + k], ncyc, t0[i][j*s->nchan + k]);
 			    }
 			    else
 			    {
-				    t0[i][j*s->nchan + k] = t0[i][j*s->nchan + k - 1];
-				    freq_phase[i][j*s->nchan + k] = freq_phase[i][j*s->nchan + k - 1];
-				    freq_period[i][j*s->nchan + k] = freq_period[i][j*s->nchan + k - 1];   // second
+				    t0[i][j*s->nchan + k] = t0[i][(j-1)*s->nchan + k];
+				    freq_phase[i][j*s->nchan + k] = freq_phase[i][(j-1)*s->nchan + k];
+				    freq_period[i][j*s->nchan + k] = freq_period[i][(j-1)*s->nchan + k];   // second
 			    }
+			    printf ("test %f %d %f %f\n", tc[i][j*s->nchan + k], ncyc, t0[i][j*s->nchan + k], freq_period[i][j*s->nchan + k]);
 		    }
 	    }
     }
