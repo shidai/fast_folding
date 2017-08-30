@@ -2,8 +2,6 @@
 #include <string.h>
 #include <math.h>
 #include "fitsio.h"
-#include "T2toolkit.h"
-#include "tempo2pred.h"
 
 typedef struct search_mode{
 	long double imjd, smjd, mjd0;
