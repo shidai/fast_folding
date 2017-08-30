@@ -255,6 +255,7 @@ void read_PSRFITS_files(search_mode *s, char *fname)
 
 void demalloc (search_mode *s)
 {
+    int i;
     free(s->freqs);
 
     for (i=1; i<=s->nsub; i++)

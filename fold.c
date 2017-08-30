@@ -4,6 +4,7 @@
 #include "fitsio.h"
 #include "T2toolkit.h"
 #include "tempo2pred.h"
+#include "read_fits.h"
 
 void fold_main (search_mode *s, char *pred_name)
 {
@@ -16,6 +17,10 @@ void fold_main (search_mode *s, char *pred_name)
     long double phase0, phase;
     long double mjd;
     long double freq;
+
+    double temp;
+    int index;
+
 
     if (ret=T2Predictor_Read(&pred, pred_name))
     //if (ret=T2Predictor_Read(&pred,(char *)"t2pred.dat"))
