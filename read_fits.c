@@ -273,6 +273,7 @@ void read_PSRFITS_files(search_mode *s, char *fname, char *pred_name)
     int index;
     float temp;
 
+    s->fdata = (float **)malloc(sizeof(float *)*s->nsub);
     for (i=1; i<=s->nsub; i++)
     {
     	s->fdata[i-1] = (float *)malloc(sizeof(float)*s->nsblk*s->nchan);
@@ -335,6 +336,7 @@ void read_PSRFITS_files(search_mode *s, char *fname, char *pred_name)
     {
     	free(s->fdata[i-1]);
     }
+    free(s->fdata)
 
     free(freq_phase);
     free(freq_period);
