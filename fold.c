@@ -54,7 +54,8 @@ void fold_main (search_mode *s, char *pred_name)
 	tc[i] = (float *)malloc(sizeof(float)*s->nchan*s->nsblk);
     }
 
-    for (i=0; i<s->nsub; i++)
+    for (i=0; i<100; i++)
+    //for (i=0; i<s->nsub; i++)
     {
 	    for (j = 0; j<s->nsblk; j++)
 	    {
