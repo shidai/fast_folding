@@ -78,6 +78,7 @@ void fold_main (search_mode *s, char *pred_name)
 				    t0[i][j*s->nchan + k] = t0[i][j*s->nchan + k - 1];
 				    freq_phase[i][j*s->nchan + k] = freq_phase[i][j*s->nchan + k - 1];
 				    freq_period[i][j*s->nchan + k] = freq_period[i][j*s->nchan + k - 1];   // second
+				    printf ("test %f %d %f\n", tc[i][j*s->nchan + k], ncyc, tc[i][j*s->nchan + k]);
 			    }
 		    }
 	    }
