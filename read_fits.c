@@ -336,7 +336,7 @@ void read_PSRFITS_files(search_mode *s, char *fname, char *pred_name)
     {
     	free(s->fdata[i-1]);
     }
-    free(s->fdata)
+    free(s->fdata);
 
     free(freq_phase);
     free(freq_period);
