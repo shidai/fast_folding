@@ -49,10 +49,10 @@ void fold_main (search_mode *s, char *pred_name)
     tc = (float **)malloc(sizeof(float *)*s->nsub);
     for (i=0; i<s->nsub; i++)
     {
-    	freq_phase[i] = (long double *)malloc(sizeof(long double)*s->nchan*s->sblk);
-    	freq_period[i] = (long double *)malloc(sizeof(long double)*s->nchan*s->sblk);
-	t0[i] = (float *)malloc(sizeof(float)*s->nchan*s->sblk);
-	tc[i] = (float *)malloc(sizeof(float)*s->nchan*s->sblk);
+    	freq_phase[i] = (long double *)malloc(sizeof(long double)*s->nchan*s->nsblk);
+    	freq_period[i] = (long double *)malloc(sizeof(long double)*s->nchan*s->nsblk);
+	t0[i] = (float *)malloc(sizeof(float)*s->nchan*s->nsblk);
+	tc[i] = (float *)malloc(sizeof(float)*s->nchan*s->nsblk);
     }
 
     for (i=0; i<s->nsub; i++)
@@ -64,17 +64,17 @@ void fold_main (search_mode *s, char *pred_name)
 
 		    for (k = 0; k<s->nchan; k++)
 		    {
-			    tc[i][j*nchan + k] = (s->nsblk*i + j)*s->tsample;
+			    tc[i][j*s->nchan + k] = (s->nsblk*i + j)*s->tsample;
 			    if (tc >= ncyc)
 			    {
-				    t0[i][j*nchan + k] = (s->nsblk*(i-1) + j)*s->tsample;
+				    t0[i][j*s->nchan + k] = (s->nsblk*(i-1) + j)*s->tsample;
 				    freq = (long double)s->freqs[jj];
 				    freq_phase[i][j*s->nchan + k] = T2Predictor_GetPhase(&pred,mjd,freq);
 				    freq_period[i][j*s->nchan + k] = 1.0/T2Predictor_GetFrequency(&pred,mjd,freq);   // second
 			    }
 			    else
 			    {
-				    t0[i][j*nchan + k] = t0[i][j*nchan + k - 1];
+				    t0[i][j*s->nchan + k] = t0[i][j*s->nchan + k - 1];
 				    freq_phase[i][j*s->nchan + k] = freq_phase[i][j*s->nchan + k - 1];
 				    freq_period[i][j*s->nchan + k] = freq_period[i][j*s->nchan + k - 1];   // second
 			    }
