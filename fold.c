@@ -72,7 +72,7 @@ void fold_main (search_mode *s, char *pred_name)
 				    freq_phase[i][j*s->nchan + k] = T2Predictor_GetPhase(&pred,mjd,freq);
 				    freq_period[i][j*s->nchan + k] = 1.0/T2Predictor_GetFrequency(&pred,mjd,freq);   // second
 				    ncyc += 2;
-				    //printf ("test %f %d %f %Lf\n", tc[i][j*s->nchan + k], ncyc, t0[i][j*s->nchan + k], freq_phase[i][j*s->nchan + k]);
+				    printf ("test %f %d %f %Lf\n", tc[i][j*s->nchan + k], ncyc, t0[i][j*s->nchan + k], freq_phase[i][j*s->nchan + k]);
 			    }
 		    }
 		    else
@@ -87,23 +87,24 @@ void fold_main (search_mode *s, char *pred_name)
 		    }
 	    }
     }
-    printf ("I am here\n");
+    //printf ("I am here\n");
 
     for (i=0; i<100; i++)
     //for (i=0; i<s->nsub; i++)
     {
+	    printf ("%d\n", i);
 	    for (j = 0; j<s->nsblk; j++)
 	    {
 		    for (k = 0; k<s->nchan; k++)
     		    {
-			    printf ("I am here %d %d %d %Lf %Lf\n", i, j, k, freq_phase[i][j*s->nchan + k], freq_period[i][j*s->nchan + k]);
+			    //printf ("I am here %d %d %d %Lf %Lf\n", i, j, k, freq_phase[i][j*s->nchan + k], freq_period[i][j*s->nchan + k]);
 			    phase0 = freq_phase[i][j*s->nchan + k] + (tc[i][j]-t0[i][j])/freq_period[i][j*s->nchan + k];
-			    printf ("I am here here %d %Lf\n", k, phase0);
+			    //printf ("I am here here %d %Lf\n", k, phase0);
 	    		    phase = (phase0 - floor(phase0));
-			    printf ("I am here here here %d %Lf\n", k, phase);
+			    //printf ("I am here here here %d %Lf\n", k, phase);
 	    		    temp = phase*s->nbin;
 	    		    index = (int)(temp+0.5)>(int)temp?(int)temp+1:(int)temp;
-			    printf ("I am here here here here %d %Lf %d\n", k, phase, index);
+			    //printf ("I am here here here here %d %Lf %d\n", k, phase, index);
 	    		    s->prof[index] += s->fdata[i][s->nchan*j + k];
 		    }
 	    }
