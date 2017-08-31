@@ -40,10 +40,13 @@ void fold_main (search_mode *s, char *pred_name)
 
     s->nbin = 128;
     s->prof = (double *)malloc(sizeof(double)*s->nbin);
+    memset(s->prof, 0.0, sizeof(double)*s->nbin);
+    /*
     for (i=0; i<s->nbin; i++)
     {
 	    s->prof[i] = 0.0;
     }
+    */
 
     freq_phase = (long double **)malloc(sizeof(long double *)*s->nsub);
     freq_period = (long double **)malloc(sizeof(long double *)*s->nsub);
