@@ -34,6 +34,7 @@ int main(int argc, char *argv[])
 	}
 
 	read_PSRFITS_files(s, in_name);
+	s->tcyc = 2.0;
 
 	fold_main(s, pred_name);
 

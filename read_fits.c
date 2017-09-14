@@ -59,8 +59,9 @@ void get_PSRFITS_subint(float *fdata, fitsfile *fp, int isub, int nbit, int ncha
                 cur_subint, status);
         exit(1);
     }
+
     // The following converts that byte-packed data into bytes
-		omp_set_num_threads(1);
+		omp_set_num_threads(10);
     if (bits_per_sample == 4) {
 #ifdef _OPENMP
 #pragma omp parallel for default(none) shared(numtoread,cdata,ctmp)

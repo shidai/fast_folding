@@ -8,6 +8,7 @@ typedef struct search_mode{
 	int nsub, nchan, nsblk, nbit;
 	int nbin;
 	double tsample;
+	float tcyc;
 
 	double *freqs;
 	double *prof;
