@@ -108,10 +108,10 @@ void fold_main (search_mode *s, char *pred_name)
 			}
 		}
 
-    for (i=0; i<s->nbin; i++)
-    {
-	    printf ("%f\n", s->prof[i]);
-    }
+    //for (i=0; i<s->nbin; i++)
+    //{
+	  //  printf ("%f\n", s->prof[i]);
+    //}
 
     for (i=0; i<ncyc; i++)
     {
